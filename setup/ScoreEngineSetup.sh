@@ -43,4 +43,6 @@ touch admin.creds
 echo "admin,admin" >> admin.creds
 cd cd ~/Quotient
 
+docker-compose up --detach
+
 echo "Score Engine Setup Script Complete, run quotient with ./quotient"
