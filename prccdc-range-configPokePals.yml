@@ -11,8 +11,8 @@ ludus:
     domain:
       fqdn: pokepals.com
       role: primary-dc
-  - vm_name: "{{ range_id }}-ad-win11-22h2-pokepals"
-    hostname: "{{ range_id }}-WINdesk-pokepals"
+  - vm_name: "{{ range_id }}-win11-pals"
+    hostname: "{{ range_id }}-WIN-pals"
     template: win11-22h2-x64-enterprise-template
     vlan: 10
     ip_last_octet: 11
