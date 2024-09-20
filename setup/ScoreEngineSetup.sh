@@ -41,7 +41,7 @@ cd ~/Quotient/config
 
 touch admin.creds
 echo "admin,admin" >> admin.creds
-cd cd ~/Quotient
+cd ~/Quotient
 
 docker-compose up --detach
 
