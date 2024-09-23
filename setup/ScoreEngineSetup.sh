@@ -39,10 +39,23 @@ chmod 744 quotient
 
 cd ~/Quotient/config
 
+#Add admin creds
 touch admin.creds
 echo "admin,admin" >> admin.creds
+
+#Add service credlists
+echo "localuser,password" >> windesk_SMB.credlist 
+echo "localuser,password" >> windesk_SSH.credlist
+echo "localuser,password" >> db_SQL.credlist
+echo "localuser,password" >> db_SSH.credlist
+
+echo "debian,debian" >> web_SSH.credlist
+echo "debian,debian" >> wiki_SSH.credlist
+
+
 cd ~/Quotient
 
+#Start database
 docker-compose up --detach
 
 echo "Score Engine Setup Script Complete, run quotient with ./quotient"
