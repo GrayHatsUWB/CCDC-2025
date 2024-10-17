@@ -30,7 +30,7 @@ ludus:
   - vm_name: "{{ range_id }}-EXC-MAIL-pokepals"
     hostname: "{{ range_id }}-mail-pokepals"
     template: win2019-server-x64-no-security-updates-template
-    vlan: 20
+    vlan: 10
     ip_last_octet: 2
     ram_gb: 16
     cpus: 4
