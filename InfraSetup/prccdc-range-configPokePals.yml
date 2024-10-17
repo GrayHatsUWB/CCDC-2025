@@ -37,7 +37,7 @@ ludus:
     windows:
       sysprep: true
     domain:
-      fqdn: ludus.domain
+      fqdn: pokepals.domain
       role: member
     roles:
       - aleemladha.ludus_exchange
