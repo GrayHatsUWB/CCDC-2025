@@ -39,6 +39,8 @@ chmod 744 quotient
 
 cd ~/Quotient/config
 
+echo "10.3.10.25  ludus.domain" >> /etc/hosts
+
 #Add admin creds
 touch admin.creds
 echo "admin,admin" >> admin.creds
