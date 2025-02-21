@@ -57,4 +57,3 @@ sudo tcpdump -i eth0 tcp or sudo tcpdump -i eth0 udp -->specify TCP or UDP packe
 sudo tcpdump -A -i eth0 port <port> --> viewing packet content, -A shows the packet payload
 sudo tcpdump -w capture.pcap -i eth0 port <port> --> saving the captured traffic, -w capture.pcap saves the packet as a file for Wireshark analysis 
 (-i wlan0 for wifi traffic)
-
