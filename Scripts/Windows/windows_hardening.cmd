@@ -6,8 +6,6 @@
 ::                        https://github.com/cryps1s/DARKSURGEON/tree/master/configuration/configuration-scripts
 ::                        https://gist.github.com/alirobe/7f3b34ad89a159e6daa1#file-reclaimwindows10-ps1-L71
 ::                        https://github.com/teusink/Home-Security-by-W10-Hardening
-::
-:: Modified by MisterAAnderson for CCDC 2022: https://github.com/misteraanderson/
 ::########################################################################################################################
 :: Change file associations to protect against common ransomware attacks
 :: Note that if you legitimately use these extensions, like .bat, you will now need to execute them manually from cmd or powershell

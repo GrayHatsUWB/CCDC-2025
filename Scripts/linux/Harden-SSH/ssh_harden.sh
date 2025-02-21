@@ -1,16 +1,5 @@
 #!/bin/bash
 
-# Shane Sexton
-# May 3, 2016
-# SSH Hardening Script
-# Version 1.1
-#
-# This is a script to automate the hardening of SSH servers. It makes
-# several common changes to sshd_config to make SSH less vulnerable to
-# attackers. It has options to back up sshd_config, update SELinux and
-# firewalld rules, and set an SSH banner.
-# Syntax: "sudo ssh_harden.sh i" for interactive mode or
-# "sudo ssh_harden.sh q" for quick mode
 
 #Check if running with proper privileges
 function check_root() {
