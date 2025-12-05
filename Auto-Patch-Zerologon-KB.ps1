@@ -114,3 +114,6 @@ Write-Host "[*] Set $regName to $regValue under $regPath" -ForegroundColor Green
 Write-Host "    This forces secure Netlogon connections and blocks Zerologon-style abuse." -ForegroundColor Green [web:63][web:144][web:158]
 
 Write-Host "`n[*] Reboot the DC at a convenient time to complete the KB installation and enforcement." -ForegroundColor Yellow
+
+Reset-ComputerMachinePassword
+Reset-ComputerMachinePassword
