@@ -21,17 +21,17 @@ Write-Host ""
 
 # === HARD-CODED KB TABLE (MULTIPLE PACKAGES PER OS) ===
 # Each OS entry has an array of KB packages.
-# Fill in real MSU URLs from the Microsoft Update Catalog. [web:135][web:154][web:156]
+# Fill in real MSU URLs from the Microsoft Update Catalog.
 $kbTable = @(
     @{
         OsMatch  = "Windows Server 2016"
         Packages = @(
             @{
-                KbId = "KB5014026"   # example Zerologon-fix rollup; update as needed [web:154][web:156] #KB4571694
+                KbId = "KB5014026"   # example Zerologon-fix rollup; update as needed
                 Url  = "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/secu/2022/05/windows10.0-kb5014026-x64_df6de35fd472512e628c2acc6e8d58f3e6139ac9.msu"
             },
             @{
-                KbId = "KB5013952"  # example Zerologon-fix LCU; pick your preferred LCU [web:154][web:156]
+                KbId = "KB5013952"  # example Zerologon-fix LCU; pick your preferred LCU
                 Url  = "https://catalog.s.download.windowsupdate.com/d/msdownload/update/software/secu/2022/05/windows10.0-kb5013952-x64_c9c29b4a81897db5545e284f04490c0659dc8b06.msu"
             }
         )
@@ -63,7 +63,7 @@ $kbEntry = Get-KBEntryForOS -Caption $caption -Table $kbTable
 
 if (-not $kbEntry) {
     Write-Host "[!] No KB mapping found for this OS in kbTable. Edit the script and add an entry for '$caption'." -ForegroundColor Red
-    Write-Host "    Use: https://msrc.microsoft.com/update-guide/vulnerability/CVE-2020-1472 to pick KBs." -ForegroundColor Gray [web:135][web:154]
+    Write-Host "    Use: https://msrc.microsoft.com/update-guide/vulnerability/CVE-2020-1472 to pick KBs." -ForegroundColor Gray
     exit 1
 }
 
@@ -113,10 +113,10 @@ foreach ($pkg in $packages) {
 
     Write-Host "[*] Installing $kbId via wusa (quiet, no auto restart)..." -ForegroundColor Cyan
     Start-Process -FilePath "wusa.exe" -ArgumentList "`"$msuPath`" /quiet /norestart" -Wait
-    Write-Host "[*] wusa completed for $kbId. A reboot may be required to finalize this update." -ForegroundColor Yellow [web:146]
+    Write-Host "[*] wusa completed for $kbId. A reboot may be required to finalize this update." -ForegroundColor Yellow
 }
 
-# Netlogon enforcement mode (needed for full mitigation) [web:63][web:144][web:158]
+# Netlogon enforcement mode (needed for full mitigation)
 Write-Host "`n[*] Enabling Netlogon secure channel enforcement mode..." -ForegroundColor Cyan
 
 $regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters"
@@ -130,6 +130,6 @@ if (-not (Test-Path $regPath)) {
 New-ItemProperty -Path $regPath -Name $regName -Value $regValue -PropertyType DWord -Force | Out-Null
 
 Write-Host "[*] Set $regName to $regValue under $regPath" -ForegroundColor Green
-Write-Host "    This forces secure Netlogon connections and blocks Zerologon-style abuse." -ForegroundColor Green [web:63][web:144][web:158]
+Write-Host "    This forces secure Netlogon connections and blocks Zerologon-style abuse." -ForegroundColor Green
 
 Write-Host "`n[*] Reboot the DC at a convenient time to complete the KB installations and enforcement." -ForegroundColor Yellow
