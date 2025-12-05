@@ -159,7 +159,3 @@ if ($Stats.Failed -gt 0) {
 Write-Host "`nCSV exported to: $outCsv" -ForegroundColor Cyan
 Write-Host "Log file (detailed): $logFile" -ForegroundColor Cyan
 Write-Host "Success rate: $(([math]::Round($Stats.Success / $Stats.Total * 100, 2)))%" -ForegroundColor Cyan
-
-# Display first few credentials for verification
-Write-Host "`nFirst 5 credentials (for verification):" -ForegroundColor Yellow
-$Results | Select-Object -First 5 | Format-Table Username, Password -AutoSize
