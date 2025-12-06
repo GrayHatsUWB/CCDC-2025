@@ -139,58 +139,31 @@ foreach ($pkg in $packages) {
     $kbUrl = $pkg.Url
 
     if (-not $kbUrl -or $kbUrl -like "*<REPLACE>*") {
-        Write-Host "[!] Package $kbId has a placeholder URL." -ForegroundColor Red
-        Write-Host "    Download manually from: https://www.catalog.update.microsoft.com" -ForegroundColor Yellow
-        Write-Host "    Search for: $kbId" -ForegroundColor Yellow
+        Write-Host "[!] Package $kbId has a placeholder URL. Replace it with the real MSU URL before running." -ForegroundColor Red
         continue
     }
 
-    # NOTE: Direct MSU URLs are more reliable than search URLs
-    # For production use, obtain the direct .msu download URL from Microsoft Update Catalog
-    Write-Host "[*] $kbId : $($pkg.Note)" -ForegroundColor Cyan
-    Write-Host "    Search URL: $kbUrl" -ForegroundColor Gray
-    Write-Host "    ACTION: Download manually and place in $downloadDir\" -ForegroundColor Yellow
-}
-
-Write-Host ""
-Write-Host "[!] MANUAL DOWNLOAD STEP REQUIRED:" -ForegroundColor Yellow
-Write-Host "    1. Visit: https://www.catalog.update.microsoft.com" -ForegroundColor Gray
-Write-Host "    2. Search for each KB above (e.g., KB5014026)" -ForegroundColor Gray
-Write-Host "    3. Download the .msu file for your OS architecture (x64)" -ForegroundColor Gray
-Write-Host "    4. Place in: $downloadDir\" -ForegroundColor Gray
-Write-Host "    5. Continue with this script" -ForegroundColor Gray
-Write-Host ""
-Read-Host "Press Enter once you've downloaded and placed all .msu files in $downloadDir"
-Write-Host ""
-
-# Verify downloaded files exist
-$allDownloaded = $true
-foreach ($pkg in $packages) {
-    $msuPath = Join-Path $downloadDir "$($pkg.KbId).msu"
-    if (-not (Test-Path $msuPath)) {
-        Write-Host "[!] Missing: $($pkg.KbId).msu at $msuPath" -ForegroundColor Red
-        $allDownloaded = $false
-    }
-    else {
-        Write-Host "[*] Found: $($pkg.KbId).msu" -ForegroundColor Green
-    }
-}
-
-if (-not $allDownloaded) {
-    Write-Host "[!] Not all KB patches were found. Cannot continue." -ForegroundColor Red
-    exit 1
-}
-
-Write-Host ""
-Write-Host "[*] Installing patches via wusa.exe..." -ForegroundColor Cyan
-
-foreach ($pkg in $packages) {
-    $kbId = $pkg.KbId
     $msuPath = Join-Path $downloadDir "$kbId.msu"
 
-    Write-Host "[*] Installing $kbId..." -ForegroundColor Cyan
+    if (-not (Test-Path $msuPath)) {
+        Write-Host "[*] Downloading $kbId..." -ForegroundColor Cyan
+        Write-Host "    URL: $kbUrl" -ForegroundColor Gray
+        try {
+            Start-BitsTransfer -Source $kbUrl -Destination $msuPath -ErrorAction Stop
+            Write-Host "[*] Downloaded to $msuPath" -ForegroundColor Green
+        }
+        catch {
+            Write-Host "[!] Download failed for $kbId $($_.Exception.Message)" -ForegroundColor Red
+            continue
+        }
+    }
+    else {
+        Write-Host "[*] $kbId already present at $msuPath" -ForegroundColor Green
+    }
+
+    Write-Host "[*] Installing $kbId via wusa (quiet, no auto restart)..." -ForegroundColor Cyan
     Start-Process -FilePath "wusa.exe" -ArgumentList "`"$msuPath`" /quiet /norestart" -Wait
-    Write-Host "[*] Installation completed for $kbId. Return code: $LASTEXITCODE" -ForegroundColor Green
+    Write-Host "[*] wusa completed for $kbId. A reboot may be required to finalize this update." -ForegroundColor Yellow
 }
 
 Write-Host ""
