@@ -165,7 +165,7 @@ foreach ($pkg in $packages) {
 
     # NOTE: Direct MSU URLs are more reliable than search URLs
     # For production use, obtain the direct .msu download URL from Microsoft Update Catalog
-    Write-Host "[*] $kbId: $($pkg.Note)" -ForegroundColor Cyan
+    Write-Host "[*] $kbId : $($pkg.Note)" -ForegroundColor Cyan
     Write-Host "    Search URL: $kbUrl" -ForegroundColor Gray
     Write-Host "    ACTION: Download manually and place in $downloadDir\" -ForegroundColor Yellow
 }
