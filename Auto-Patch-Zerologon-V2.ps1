@@ -10,8 +10,6 @@
     IMPORTANT: This script implements Microsoft's TWO-PHASE mitigation:
     1. Initial Deployment Phase (Aug 2020+): Patches block weak Netlogon channels
     2. Enforcement Phase (Feb 2021+): Strict enforcement of secure RPC for ALL connections
-    
-    If you're still exploitable after running this, see "DIAGNOSIS" section at end.
 #>
 
 Write-Host "[*] Detecting OS..." -ForegroundColor Cyan
@@ -34,25 +32,14 @@ Write-Host ""
 #   - Verify FullSecureChannelProtection is set to 1
 #   - Check Event Viewer for 5805 events (failed netlogon attempts)
 #   - Reboot after patching
-#   - If still vulnerable, see "DIAGNOSIS" section below
 
 $kbTable = @(
-    @{
-        OsMatch  = "Windows Server 2008 R2"
-        Packages = @(
-            @{
-                KbId = "KB4571702"
-                Url  = "https://www.catalog.update.microsoft.com/Search.aspx?q=KB4571702"
-                Note = "Zerologon patch for Server 2008 R2 SP1"
-            }
-        )
-    },
     @{
         OsMatch  = "Windows Server 2012"
         Packages = @(
             @{
                 KbId = "KB4571702"
-                Url  = "https://www.catalog.update.microsoft.com/Search.aspx?q=KB4571702"
+                Url  = "https://catalog.s.download.windowsupdate.com/d/msdownload/update/software/secu/2020/08/windows8-rt-kb4571702-x64_31d0c26c78ed003e20c197b9f35869069f5f4b56.msu"
                 Note = "Zerologon patch for Server 2012"
             }
         )
@@ -62,7 +49,7 @@ $kbTable = @(
         Packages = @(
             @{
                 KbId = "KB4571723"
-                Url  = "https://www.catalog.update.microsoft.com/Search.aspx?q=KB4571723"
+                Url  = "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/secu/2020/08/windows8.1-kb4571723-x64_5f366bc88992b43b074421fd9b817c543c93e456.msu"
                 Note = "Zerologon patch for Server 2012 R2"
             }
         )
@@ -72,12 +59,12 @@ $kbTable = @(
         Packages = @(
             @{
                 KbId = "KB5014026"
-                Url  = "https://www.catalog.update.microsoft.com/Search.aspx?q=KB5014026"
+                Url  = "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/secu/2022/05/windows10.0-kb5014026-x64_df6de35fd472512e628c2acc6e8d58f3e6139ac9.msu"
                 Note = "SSU (Servicing Stack Update) for Server 2016"
             },
             @{
                 KbId = "KB5013952"
-                Url  = "https://www.catalog.update.microsoft.com/Search.aspx?q=KB5013952"
+                Url  = "https://catalog.s.download.windowsupdate.com/d/msdownload/update/software/secu/2022/05/windows10.0-kb5013952-x64_c9c29b4a81897db5545e284f04490c0659dc8b06.msu"
                 Note = "LCU (Latest Cumulative Update) for Server 2016 - includes Zerologon fix"
             }
         )
@@ -86,19 +73,14 @@ $kbTable = @(
         OsMatch  = "Windows Server 2019"
         Packages = @(
             @{
-                KbId = "KB4565349"
-                Url  = "https://www.catalog.update.microsoft.com/Search.aspx?q=KB4565349"
+                KbId = "KB4566424"
+                Url  = "https://catalog.s.download.windowsupdate.com/d/msdownload/update/software/secu/2020/08/windows10.0-kb4566424-x64_3d5bfb3e572029861cfb02c69de6b909153f5856.msu"
                 Note = "Zerologon patch for Server 2019"
-            }
-        )
-    },
-    @{
-        OsMatch  = "Windows Server 2022"
-        Packages = @(
+            },
             @{
-                KbId = "KB5005317"
-                Url  = "https://www.catalog.update.microsoft.com/Search.aspx?q=KB5005317"
-                Note = "Zerologon enforcement mode patch for Server 2022"
+                KbId = "KB5068791"
+                Url  = "https://catalog.s.download.windowsupdate.com/c/msdownload/update/software/secu/2025/11/windows10.0-kb5068791-x64_a8b1b1b6c7b6b673c5a5f32772749eb2bb80c88b.msu"
+                Note = "LCU (Latest Cumulative Update) for Server 2019 - includes Zerologon fix"
             }
         )
     }
@@ -188,7 +170,8 @@ foreach ($pkg in $packages) {
     if (-not (Test-Path $msuPath)) {
         Write-Host "[!] Missing: $($pkg.KbId).msu at $msuPath" -ForegroundColor Red
         $allDownloaded = $false
-    } else {
+    }
+    else {
         Write-Host "[*] Found: $($pkg.KbId).msu" -ForegroundColor Green
     }
 }
@@ -288,3 +271,7 @@ Write-Host "    [OK] FullSecureChannelProtection enabled (enforcement mode)" -Fo
 Write-Host "    [OK] RestrictNullSessAccess enabled" -ForegroundColor Green
 Write-Host "    [OK] KRBTGT passwords reset" -ForegroundColor Green
 Write-Host "    [OK] Machine password reset" -ForegroundColor Green
+
+Write-Host ""
+Write-Host "[!] IMPORTANT: Reboot the DC at a convenient time to finalize all changes!" -ForegroundColor Yellow
+Write-Host ""
