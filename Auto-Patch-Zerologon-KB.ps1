@@ -133,3 +133,20 @@ Write-Host "[*] Set $regName to $regValue under $regPath" -ForegroundColor Green
 Write-Host "    This forces secure Netlogon connections and blocks Zerologon-style abuse." -ForegroundColor Green
 
 Write-Host "`n[*] Reboot the DC at a convenient time to complete the KB installations and enforcement." -ForegroundColor Yellow
+
+Write-Host "[*] Resetting Kerberos password (first pass)..." -ForegroundColor Cyan
+# Reset KRBTGT once
+Set-ADAccountPassword -Identity krbtgt -Reset -NewPassword (ConvertTo-SecureString -String (path-to-random-string) -AsPlainText -Force)
+Write-Host "[*] KRBTGT reset once." -ForegroundColor Yellow
+
+# Wait for replication (in a single DC lab, you can proceed immediately, otherwise wait 15-20 mins)
+Start-Sleep -Seconds 5
+
+Write-Host "[*] Resetting Kerberos password (second pass)..." -ForegroundColor Cyan
+# Reset KRBTGT a second time to clear history
+Set-ADAccountPassword -Identity krbtgt -Reset -NewPassword (ConvertTo-SecureString -String (path-to-random-string) -AsPlainText -Force)
+Write-Host "[*] KRBTGT reset twice. All golden tickets are now invalid." -ForegroundColor Yellow
+
+Write-Host "[*] Resetting machine password..." -ForegroundColor Cyan
+Reset-ComputerMachinePassword
+Write-Host "[*] Machine password reset." -ForegroundColor Yellow
