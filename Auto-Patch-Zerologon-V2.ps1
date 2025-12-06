@@ -213,6 +213,10 @@ $krbtgtPassword1 = New-RandomPassword
 $krbtgtPassword2 = New-RandomPassword
 
 try {
+    Write-Host "[*] Resetting machine password..." -ForegroundColor Cyan
+    Reset-ComputerMachinePassword -ErrorAction Stop
+    Write-Host "[*] Machine password reset." -ForegroundColor Green
+
     Write-Host "[*] Resetting KRBTGT password (Pass 1)..." -ForegroundColor Cyan
     Set-ADAccountPassword -Identity krbtgt -Reset -NewPassword (ConvertTo-SecureString -String $krbtgtPassword1 -AsPlainText -Force) -ErrorAction Stop
     Write-Host "[*] KRBTGT reset (Pass 1) - old tickets now invalid." -ForegroundColor Green
@@ -223,10 +227,6 @@ try {
     Write-Host "[*] Resetting KRBTGT password (Pass 2)..." -ForegroundColor Cyan
     Set-ADAccountPassword -Identity krbtgt -Reset -NewPassword (ConvertTo-SecureString -String $krbtgtPassword2 -AsPlainText -Force) -ErrorAction Stop
     Write-Host "[*] KRBTGT reset (Pass 2) - history cleared, all golden tickets invalid." -ForegroundColor Green
-
-    Write-Host "[*] Resetting machine password..." -ForegroundColor Cyan
-    Reset-ComputerMachinePassword -ErrorAction Stop
-    Write-Host "[*] Machine password reset." -ForegroundColor Green
 }
 catch {
     Write-Host "[!] Active Directory operation failed: $($_.Exception.Message)" -ForegroundColor Red
