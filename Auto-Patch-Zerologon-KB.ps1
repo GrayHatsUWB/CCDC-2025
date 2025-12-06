@@ -134,9 +134,36 @@ Write-Host "    This forces secure Netlogon connections and blocks Zerologon-sty
 
 Write-Host "`n[*] Reboot the DC at a convenient time to complete the KB installations and enforcement." -ForegroundColor Yellow
 
+# Function to generate a random secure password
+function New-RandomPassword {
+    param(
+        [int]$Length = 32
+    )
+    $characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?"
+    $random = New-Object System.Random
+    $password = ""
+    for ($i = 0; $i -lt $Length; $i++) {
+        $password += $characters[$random.Next($characters.Length)]
+    }
+    return $password
+}
+
+# Check if running elevated
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "[!] This script must run as Administrator." -ForegroundColor Red
+    exit 1
+}
+
+# Generate random passwords
+$krbtgtPassword1 = New-RandomPassword
+$krbtgtPassword2 = New-RandomPassword
+
+Write-Host "[*] Generated random passwords for remediation." -ForegroundColor Green
+Write-Host ""
+
 Write-Host "[*] Resetting Kerberos password (first pass)..." -ForegroundColor Cyan
 # Reset KRBTGT once
-Set-ADAccountPassword -Identity krbtgt -Reset -NewPassword (ConvertTo-SecureString -String (path-to-random-string) -AsPlainText -Force)
+Set-ADAccountPassword -Identity krbtgt -Reset -NewPassword (ConvertTo-SecureString -String $krbtgtPassword1 -AsPlainText -Force)
 Write-Host "[*] KRBTGT reset once." -ForegroundColor Yellow
 
 # Wait for replication (in a single DC lab, you can proceed immediately, otherwise wait 15-20 mins)
@@ -144,7 +171,7 @@ Start-Sleep -Seconds 5
 
 Write-Host "[*] Resetting Kerberos password (second pass)..." -ForegroundColor Cyan
 # Reset KRBTGT a second time to clear history
-Set-ADAccountPassword -Identity krbtgt -Reset -NewPassword (ConvertTo-SecureString -String (path-to-random-string) -AsPlainText -Force)
+Set-ADAccountPassword -Identity krbtgt -Reset -NewPassword (ConvertTo-SecureString -String $krbtgtPassword2 -AsPlainText -Force)
 Write-Host "[*] KRBTGT reset twice. All golden tickets are now invalid." -ForegroundColor Yellow
 
 Write-Host "[*] Resetting machine password..." -ForegroundColor Cyan
